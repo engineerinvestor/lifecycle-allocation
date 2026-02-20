@@ -69,7 +69,8 @@ def expected_income(age: int, spec: IncomeModelSpec, profile: InvestorProfile) -
             incomes = df["income"].values
             if age < ages[0] or age > ages[-1]:
                 return 0.0
-            return float(pd.Series(incomes, index=ages).reindex([age]).interpolate().iloc[0])
+            series = pd.Series(list(incomes), index=list(ages))
+            return float(series.reindex([age]).interpolate().iloc[0])
         return float(row["income"].iloc[0])
 
     raise ValueError(f"Unknown income model type: {spec.type}")
