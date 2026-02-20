@@ -12,6 +12,8 @@ env/
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/
+site/
 htmlcov/
 .coverage
 *.so
+.DS_Store
