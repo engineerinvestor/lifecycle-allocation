@@ -22,7 +22,26 @@ def load_profile(
 ) -> tuple[InvestorProfile, MarketAssumptions, DiscountCurveSpec, ConstraintsSpec]:
     """Load an investor profile from a YAML file.
 
-    Returns (InvestorProfile, MarketAssumptions, DiscountCurveSpec, ConstraintsSpec).
+    Parses a YAML profile into the four configuration objects needed to
+    run an allocation computation. Missing sections use defaults.
+
+    Parameters
+    ----------
+    path : str or Path
+        Path to a YAML file containing the investor profile.
+
+    Returns
+    -------
+    tuple of (InvestorProfile, MarketAssumptions, DiscountCurveSpec, ConstraintsSpec)
+        The four configuration objects parsed from the YAML file.
+
+    Raises
+    ------
+    ValueError
+        If the YAML content is not a mapping, or if required fields
+        (``age``, ``investable_wealth``) are missing.
+    FileNotFoundError
+        If the specified path does not exist.
     """
     path = Path(path)
     with open(path) as f:
@@ -30,6 +49,10 @@ def load_profile(
 
     if not isinstance(data, dict):
         raise ValueError(f"Expected a YAML mapping, got {type(data).__name__}")
+
+    # Parse each optional section from the YAML, falling back to defaults
+    # when a section is missing. Order: income -> benefits -> mortality ->
+    # profile -> market -> discount curve -> constraints.
 
     # Income model
     income_data = data.get("income_model", {})

@@ -6,6 +6,11 @@ from typing import Any
 
 from matplotlib.axes import Axes
 
+# Visual theme configuration for all lifecycle-allocation charts.
+# - "colors": named color palette for chart elements (bars, lines, fills)
+# - "figsize": default (width, height) in inches for new figures
+# - "bar_width": default bar width for vertical bar charts
+# - "font_size": font sizes by role (title, axis label, annotation, tick)
 THEME: dict[str, Any] = {
     "colors": {
         "wealth": "#2196F3",

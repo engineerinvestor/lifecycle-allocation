@@ -196,8 +196,8 @@ These disclosures should appear in `explain.py` output whenever `allow_leverage=
 
 ```
 
-practicalfinance/
-**init**.py
+lifecycle_allocation/
+__init__.py
 core/
 models.py            # dataclasses: InvestorProfile, MarketAssumptions, etc.
 allocation.py        # alpha_star, alpha_t, constraints
@@ -328,7 +328,7 @@ LICENSE
 ## 8. CLI spec
 
 Command:
-- `practicalfinance alloc --profile profile.yaml --out ./out --format png --report`
+- `lifecycle-allocation alloc --profile profile.yaml --out ./out --format png --report`
 
 Outputs:
 - `out/allocation.json`

@@ -17,3 +17,4 @@ htmlcov/
 .coverage
 *.so
 .DS_Store
+BACKGROUND_INFORMATION_GITIGNORE.md

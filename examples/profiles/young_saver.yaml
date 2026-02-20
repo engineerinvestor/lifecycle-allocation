@@ -1,26 +1,30 @@
-age: 25
-retirement_age: 67
-investable_wealth: 25000
-after_tax_income: 70000
-risk_tolerance: 7
+# Young Saver Profile
+# A 25-year-old early-career professional with modest savings and high
+# growth potential. The large H/W ratio drives a maximum equity allocation.
+
+age: 25                      # Current age
+retirement_age: 67           # Expected retirement age
+investable_wealth: 25000     # Current investable portfolio ($)
+after_tax_income: 70000      # Current annual after-tax income ($)
+risk_tolerance: 7            # 1-10 scale (7 = moderately aggressive)
 
 income_model:
-  type: growth
-  g: 0.02
+  type: growth               # Income grows at a constant real rate
+  g: 0.02                    # 2% annual real income growth
 
 benefit_model:
-  type: none
+  type: none                 # No retirement benefits modeled
 
 mortality_model:
-  type: none
+  type: none                 # Assume survival to T_max
 
 discount_curve:
-  type: constant
-  rate: 0.02
+  type: constant             # Flat discount rate for human capital PV
+  rate: 0.02                 # 2% annual real discount rate
 
 market:
-  mu: 0.05
-  r: 0.02
-  sigma: 0.18
-  real: true
-  borrowing_spread: 0.015
+  mu: 0.05                   # Expected annual stock return (real)
+  r: 0.02                    # Risk-free rate (real)
+  sigma: 0.18                # Annual stock volatility
+  real: true                 # All returns are in real terms
+  borrowing_spread: 0.015    # 150 bps above r for margin borrowing

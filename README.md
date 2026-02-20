@@ -70,6 +70,8 @@ df = compare_strategies(profile, market)
 print(df.to_string(index=False))
 ```
 
+See the [full quickstart](https://engineerinvestor.github.io/lifecycle-allocation/quickstart/) for a detailed walkthrough covering YAML profiles, CLI usage, and chart generation.
+
 ## Quick Start (CLI)
 
 ```bash
@@ -93,11 +95,11 @@ Young workers with high H/W ratios get higher equity allocations. As you age and
 
 | Archetype | Age | Income | Wealth | H/W Ratio | Recommended Equity |
 |---|---|---|---|---|---|
-| Young saver | 30 | $70k | $100k | ~15x | ~90%+ |
-| Mid-career | 45 | $120k | $500k | ~4x | ~65% |
-| Near-retirement | 60 | $90k | $1.2M | ~0.5x | ~40% |
+| Young saver | 25 | $70k | $25k | ~115x | 100% |
+| Mid-career | 45 | $120k | $500k | ~4x | ~96% |
+| Near-retirement | 60 | $150k | $1M | ~0.8x | ~24% |
 
-*Values depend on market assumptions and risk tolerance. These are illustrative.*
+*Values computed from the example YAML profiles with default market assumptions (mu=5%, r=2%, sigma=18%). Results vary with risk tolerance and assumptions.*
 
 ## Tutorial
 

@@ -34,7 +34,29 @@ LEVERAGE_DISCLOSURES = [
 
 
 def build_explanation(components: dict[str, Any], constraints: ConstraintsSpec | None) -> str:
-    """Build a human-readable explanation of the allocation result."""
+    """Build a human-readable explanation of the allocation result.
+
+    Parameters
+    ----------
+    components : dict
+        Intermediate computation values. Expected keys:
+
+        - ``human_capital`` (float): PV of future earnings/benefits
+        - ``investable_wealth`` (float): current financial wealth
+        - ``alpha_star`` (float): baseline risky share
+        - ``alpha_unconstrained`` (float): allocation before clamping
+        - ``alpha_recommended`` (float): final clamped allocation
+        - ``leverage_applied`` (bool): whether leverage is in the result
+    constraints : ConstraintsSpec or None
+        Allocation constraints, used to determine if leverage disclosures
+        should be included.
+
+    Returns
+    -------
+    str
+        Multi-line explanation text including balance sheet summary,
+        allocation derivation, and leverage risk disclosures (if applicable).
+    """
     lines: list[str] = []
 
     h = components.get("human_capital", 0.0)

@@ -28,6 +28,21 @@ def expected_income(age: int, spec: IncomeModelSpec, profile: InvestorProfile) -
     """Compute expected income at a given age.
 
     Returns 0 if age >= retirement_age.
+
+    Parameters
+    ----------
+    age : int
+        The age at which to compute expected income.
+    spec : IncomeModelSpec
+        Income model specification (type, growth rate, education, etc.).
+    profile : InvestorProfile
+        Investor profile, used for current age, retirement_age, and
+        after_tax_income as the base income level.
+
+    Returns
+    -------
+    float
+        Expected annual after-tax income in dollars.
     """
     if age >= profile.retirement_age:
         return 0.0
@@ -61,14 +76,18 @@ def expected_income(age: int, spec: IncomeModelSpec, profile: InvestorProfile) -
         df = pd.read_csv(spec.path)
         if "age" not in df.columns or "income" not in df.columns:
             raise ValueError("CSV must have 'age' and 'income' columns")
+        # Look for an exact age match first
         row = df[df["age"] == age]
         if len(row) == 0:
-            # Linear interpolation for missing ages
+            # No exact match -- fall back to linear interpolation.
+            # Sort by age so interpolation works correctly.
             df = df.sort_values("age")
             ages = df["age"].values
             incomes = df["income"].values
+            # Ages outside the CSV range return 0 (no extrapolation)
             if age < ages[0] or age > ages[-1]:
                 return 0.0
+            # Build a Series indexed by age, add the target age, and interpolate
             series = pd.Series(list(incomes), index=list(ages))
             return float(series.reindex([age]).interpolate().iloc[0])
         return float(row["income"].iloc[0])

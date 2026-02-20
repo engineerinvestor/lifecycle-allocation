@@ -11,6 +11,17 @@ def risk_tolerance_to_gamma(rt: int) -> float:
 
     Log-linear mapping: gamma = 10 * 0.2^((rt - 1) / 9)
     rt=1 -> gamma=10 (conservative), rt=5 -> ~4.47, rt=10 -> gamma=2 (aggressive)
+
+    Parameters
+    ----------
+    rt : int
+        Risk tolerance on a 1-10 scale, where 1 is the most conservative
+        (gamma=10) and 10 is the most aggressive (gamma=2).
+
+    Returns
+    -------
+    float
+        Risk aversion coefficient (gamma). Higher values mean more risk-averse.
     """
     if not (1 <= rt <= 10):
         raise ValueError(f"risk_tolerance must be between 1 and 10, got {rt}")
@@ -19,7 +30,27 @@ def risk_tolerance_to_gamma(rt: int) -> float:
 
 @dataclass
 class IncomeModelSpec:
-    """Specification for income projection model."""
+    """Specification for income projection model.
+
+    Attributes
+    ----------
+    type : str
+        Income model type. One of ``"flat"`` (constant income), ``"growth"``
+        (constant real growth), ``"profile"`` (CGM education-based polynomial),
+        or ``"csv"`` (user-supplied CSV file).
+    g : float
+        Annual real income growth rate. Only used when ``type="growth"``.
+    education : str or None
+        Education level for CGM profile model. One of ``"no_hs"``, ``"hs"``,
+        or ``"college"``. Only used when ``type="profile"`` and ``coefficients``
+        is not provided.
+    coefficients : list of float or None
+        Custom polynomial coefficients for the profile model. Overrides
+        ``education`` if provided. Expected format: [a0, a1, a2, a3].
+    path : str or None
+        Path to a CSV file with ``age`` and ``income`` columns. Required
+        when ``type="csv"``.
+    """
 
     type: str = "flat"
     g: float = 0.0
@@ -35,7 +66,21 @@ class IncomeModelSpec:
 
 @dataclass
 class BenefitModelSpec:
-    """Specification for retirement benefit model."""
+    """Specification for retirement benefit model.
+
+    Attributes
+    ----------
+    type : str
+        Benefit model type. One of ``"none"`` (no benefits), ``"flat"``
+        (constant annual benefit post-retirement), or ``"schedule"``
+        (user-supplied benefit schedule).
+    annual_benefit : float
+        Fixed annual benefit amount in dollars. Used when ``type="flat"``
+        and this value is > 0. Takes priority over ``replacement_rate``.
+    replacement_rate : float
+        Fraction of pre-retirement income received as a benefit. Used when
+        ``type="flat"`` and ``annual_benefit`` is 0.
+    """
 
     type: str = "none"
     annual_benefit: float = 0.0
@@ -49,7 +94,24 @@ class BenefitModelSpec:
 
 @dataclass
 class MortalitySpec:
-    """Specification for mortality/survival model."""
+    """Specification for mortality/survival model.
+
+    Attributes
+    ----------
+    type : str
+        Mortality model type. One of ``"none"`` (assume survival to T_max),
+        ``"parametric"`` (Gompertz-style survival curve), or ``"table"``
+        (user-supplied survival probabilities).
+    mode : float
+        Modal age of death for the parametric model. Ignored when
+        ``type="none"`` or ``type="table"``.
+    dispersion : float
+        Dispersion parameter for the parametric model. Controls the spread
+        of the survival curve around the mode.
+    path : str or None
+        Path to a CSV file with survival probabilities. Required when
+        ``type="table"``.
+    """
 
     type: str = "none"
     mode: float = 0.0
@@ -66,7 +128,17 @@ class MortalitySpec:
 
 @dataclass
 class DiscountCurveSpec:
-    """Specification for discount curve."""
+    """Specification for discount curve used to discount future cash flows.
+
+    Attributes
+    ----------
+    type : str
+        Discount curve type. One of ``"constant"`` (flat rate) or
+        ``"term_structure"`` (piecewise term structure).
+    rate : float
+        Constant annual discount rate (decimal). Used when ``type="constant"``.
+        For example, 0.02 means 2% per year.
+    """
 
     type: str = "constant"
     rate: float = 0.02
@@ -81,7 +153,22 @@ class DiscountCurveSpec:
 
 @dataclass
 class ConstraintsSpec:
-    """Allocation constraints."""
+    """Allocation constraints controlling the allowed range of equity exposure.
+
+    Attributes
+    ----------
+    allow_leverage : bool
+        If True, the allocation can exceed 100% (borrowing to invest). When
+        enabled, the two-tier borrowing rate model applies.
+    max_leverage : float
+        Maximum allowed equity allocation as a multiple of wealth. Must be
+        >= 1.0. Only effective when ``allow_leverage=True``.
+    allow_short : bool
+        If True, negative equity allocations are permitted.
+    min_allocation : float
+        Minimum equity allocation floor. Only meaningful when
+        ``allow_short=True``.
+    """
 
     allow_leverage: bool = False
     max_leverage: float = 1.0
@@ -95,7 +182,24 @@ class ConstraintsSpec:
 
 @dataclass
 class MarketAssumptions:
-    """Capital market assumptions."""
+    """Capital market assumptions for the stock/bond asset universe.
+
+    Attributes
+    ----------
+    mu : float
+        Expected annual stock return (decimal). For example, 0.05 means 5%.
+    r : float
+        Risk-free rate (decimal). Used as the lending rate in the two-tier
+        borrowing model.
+    sigma : float
+        Annual stock return volatility (decimal). Must be > 0.
+    real : bool
+        If True, all return assumptions are in real (inflation-adjusted) terms.
+    borrowing_spread : float
+        Spread above the risk-free rate for margin borrowing (decimal). The
+        borrowing rate is ``r + borrowing_spread``. Only affects results when
+        leverage is enabled and optimal. Must be >= 0.
+    """
 
     mu: float = 0.05
     r: float = 0.02
@@ -112,7 +216,32 @@ class MarketAssumptions:
 
 @dataclass
 class InvestorProfile:
-    """Complete investor profile."""
+    """Complete investor profile combining demographics, income, and preferences.
+
+    Attributes
+    ----------
+    age : int
+        Current age in years.
+    retirement_age : int
+        Expected retirement age. Income stops and benefits begin at this age.
+    investable_wealth : float
+        Current investable financial wealth in dollars. Must be > 0.
+    after_tax_income : float or None
+        Current annual after-tax income. Required for income models that
+        project future earnings.
+    risk_tolerance : int or None
+        Risk tolerance on a 1-10 scale. Converted to gamma via
+        ``risk_tolerance_to_gamma()``. Provide either this or ``risk_aversion``.
+    risk_aversion : float or None
+        Risk aversion coefficient (gamma) directly. Higher values mean more
+        risk-averse. Provide either this or ``risk_tolerance``.
+    income_model : IncomeModelSpec
+        Specification for projecting future income.
+    benefit_model : BenefitModelSpec
+        Specification for retirement benefits (e.g., Social Security proxy).
+    mortality_model : MortalitySpec
+        Specification for survival probability modeling.
+    """
 
     age: int
     retirement_age: int
@@ -148,7 +277,31 @@ class InvestorProfile:
 
 @dataclass
 class AllocationResult:
-    """Result of an allocation computation."""
+    """Result of an allocation computation.
+
+    Attributes
+    ----------
+    alpha_star : float
+        Baseline risky share from the two-tier Merton model, before human
+        capital adjustment.
+    alpha_unconstrained : float
+        Raw allocation after human capital adjustment, before clamping:
+        ``alpha_star * (1 + H/W)``.
+    alpha_recommended : float
+        Final recommended equity allocation after applying constraints
+        (clamped to [0, 1] or [0, max_leverage]).
+    human_capital : float
+        Present value of future earnings and benefits.
+    leverage_applied : bool
+        True if the final allocation exceeds 1.0 using the borrowing rate.
+    borrowing_cost_drag : float
+        Reduction in alpha_star caused by the borrowing spread.
+    explain : str
+        Human-readable explanation of the allocation result.
+    components : dict
+        Intermediate values for debugging and education (H, W, H/W, gamma,
+        market assumptions, etc.).
+    """
 
     alpha_star: float
     alpha_unconstrained: float

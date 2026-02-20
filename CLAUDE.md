@@ -6,14 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **lifecycle-allocation** is an open-source Python library implementing a practical lifecycle portfolio choice framework inspired by James Choi et al. It combines human capital analysis with visual analytics to produce data-driven stock/bond allocation recommendations.
 
-**Status:** Pre-implementation. See `SPEC_DRAFT.md` for the full specification and `BACKGROUND_INFORMATION_GITIGNORE.md` for research context. The reference paper is `w34166.pdf`.
+**Status:** v0.1.0 published on PyPI. See `SPEC.md` for the full specification. The reference paper is `w34166.pdf`.
 
 **Disclaimer:** Educational/research software, not investment advice.
 
 ## Build & Development Commands
 
 ```bash
-# Install (once pyproject.toml exists)
+# Install
 pip install -e ".[dev]"
 
 # Testing

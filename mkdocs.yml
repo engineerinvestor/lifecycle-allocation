@@ -26,8 +26,10 @@ theme:
 nav:
   - Home: index.md
   - Quick Start: quickstart.md
+  - Configuration: configuration.md
   - Methodology: methodology.md
   - API Reference: api.md
+  - Examples: examples.md
 
 markdown_extensions:
   - admonition

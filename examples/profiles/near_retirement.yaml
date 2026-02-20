@@ -1,25 +1,30 @@
-age: 60
-retirement_age: 67
-investable_wealth: 1000000
-after_tax_income: 150000
-risk_tolerance: 3
+# Near-Retirement Profile
+# A 60-year-old with substantial savings but only 7 years of income left.
+# Low H/W ratio (~0.8x) combined with conservative risk tolerance produces
+# a much lower equity allocation.
+
+age: 60                      # Current age
+retirement_age: 67           # Expected retirement age
+investable_wealth: 1000000   # Current investable portfolio ($)
+after_tax_income: 150000     # Current annual after-tax income ($)
+risk_tolerance: 3            # 1-10 scale (3 = conservative)
 
 income_model:
-  type: flat
+  type: flat                 # Constant real income until retirement
 
 benefit_model:
-  type: none
+  type: none                 # No retirement benefits modeled
 
 mortality_model:
-  type: none
+  type: none                 # Assume survival to T_max
 
 discount_curve:
-  type: constant
-  rate: 0.02
+  type: constant             # Flat discount rate for human capital PV
+  rate: 0.02                 # 2% annual real discount rate
 
 market:
-  mu: 0.05
-  r: 0.02
-  sigma: 0.18
-  real: true
-  borrowing_spread: 0.015
+  mu: 0.05                   # Expected annual stock return (real)
+  r: 0.02                    # Risk-free rate (real)
+  sigma: 0.18                # Annual stock volatility
+  real: true                 # All returns are in real terms
+  borrowing_spread: 0.015    # 150 bps above r for margin borrowing

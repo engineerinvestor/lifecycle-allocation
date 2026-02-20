@@ -16,6 +16,20 @@ def expected_benefit(age: int, spec: BenefitModelSpec, profile: InvestorProfile)
     """Compute expected retirement benefit at a given age.
 
     Returns 0 if age < retirement_age or benefit model is 'none'.
+
+    Parameters
+    ----------
+    age : int
+        The age at which to compute the benefit.
+    spec : BenefitModelSpec
+        Benefit model specification (type, annual_benefit, replacement_rate).
+    profile : InvestorProfile
+        Investor profile, used for retirement_age and after_tax_income.
+
+    Returns
+    -------
+    float
+        Expected annual benefit amount in dollars.
     """
     if age < profile.retirement_age:
         return 0.0
@@ -44,6 +58,32 @@ def human_capital_pv(
     H_t = sum_{s=t+1..T_max} E[CF_s] * S(t->s) / D(t->s)
 
     Where CF_s is income (pre-retirement) or benefits (post-retirement).
+
+    Parameters
+    ----------
+    profile : InvestorProfile
+        Investor profile including age, retirement_age, income_model,
+        benefit_model, and mortality_model.
+    curve : DiscountCurveSpec or None
+        Discount curve for computing present values. Defaults to constant 2%.
+    t_max : int
+        Maximum age for the summation (default 100).
+
+    Returns
+    -------
+    float
+        Present value of human capital in dollars.
+
+    Notes
+    -----
+    Cash flows are split into two regimes:
+
+    - **Pre-retirement** (age < retirement_age): cash flow = expected income
+    - **Post-retirement** (age >= retirement_age): cash flow = expected benefit
+
+    Each future cash flow is multiplied by the survival probability and
+    divided by the discount factor. Ages with zero or negative cash flow
+    are skipped.
     """
     if curve is None:
         curve = DiscountCurveSpec()
