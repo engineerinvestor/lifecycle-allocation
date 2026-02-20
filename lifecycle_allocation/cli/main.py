@@ -46,10 +46,22 @@ def alloc(
     img_format: str,
     real: bool,
 ) -> None:
-    """Compute lifecycle allocation from a profile."""
+    """Compute lifecycle allocation from a profile.
+
+    Loads an investor profile from YAML, applies any CLI flag overrides to
+    market assumptions and constraints, computes the allocation, and writes
+    results to the output directory.
+
+    CLI flags (--mu, --r, --sigma, --borrowing-spread, --real/--nominal)
+    override the corresponding values from the YAML profile. The
+    --allow-leverage and --max-leverage flags merge with YAML constraints.
+
+    Output files: allocation.json, summary.md, and optionally charts/.
+    """
     profile, market, curve, constraints = load_profile(profile_path)
 
-    # CLI overrides
+    # Apply CLI overrides to market assumptions. Each flag, if provided,
+    # replaces the corresponding value from the YAML profile.
     if mu is not None:
         market = MarketAssumptions(
             mu=mu,
@@ -90,6 +102,7 @@ def alloc(
         borrowing_spread=market.borrowing_spread,
     )
 
+    # Merge leverage constraints from CLI flags and YAML profile
     if allow_leverage or constraints.allow_leverage:
         constraints = ConstraintsSpec(
             allow_leverage=True,
@@ -106,7 +119,7 @@ def alloc(
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
 
-    # Write allocation.json
+    # Write allocation.json -- filter components to JSON-serializable scalars only
     alloc_data = {
         "alpha_star": result.alpha_star,
         "alpha_unconstrained": result.alpha_unconstrained,

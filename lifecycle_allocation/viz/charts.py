@@ -13,7 +13,18 @@ from matplotlib.figure import Figure
 from lifecycle_allocation.core.models import AllocationResult, InvestorProfile
 from lifecycle_allocation.viz.themes import THEME, apply_theme
 
-matplotlib.use("Agg")
+
+def _is_notebook() -> bool:
+    try:
+        from IPython import get_ipython
+
+        return get_ipython() is not None
+    except ImportError:
+        return False
+
+
+if not _is_notebook():
+    matplotlib.use("Agg")
 
 
 def plot_balance_sheet(
@@ -23,7 +34,27 @@ def plot_balance_sheet(
     ax: Axes | None = None,
     save_path: str | Path | None = None,
 ) -> Figure:
-    """Plot the personal balance sheet: W, H, and W+H."""
+    """Plot the personal balance sheet: W, H, and W+H.
+
+    Creates a bar chart showing financial wealth, human capital, and their
+    sum, with the H/W ratio annotated in the title.
+
+    Parameters
+    ----------
+    result : AllocationResult
+        Allocation result containing human_capital value.
+    profile : InvestorProfile
+        Investor profile containing investable_wealth.
+    ax : Axes or None
+        Matplotlib axes to draw on. If None, a new figure is created.
+    save_path : str, Path, or None
+        If provided, saves the figure to this path at 150 DPI.
+
+    Returns
+    -------
+    Figure
+        The matplotlib Figure containing the chart.
+    """
     colors = THEME["colors"]
     w = profile.investable_wealth
     h = result.human_capital
@@ -77,7 +108,23 @@ def plot_strategy_bars(
     ax: Axes | None = None,
     save_path: str | Path | None = None,
 ) -> Figure:
-    """Plot horizontal bar chart comparing allocation strategies."""
+    """Plot horizontal bar chart comparing allocation strategies.
+
+    Parameters
+    ----------
+    comparison_df : pd.DataFrame
+        DataFrame from ``compare_strategies()`` with columns ``strategy``
+        and ``allocation``.
+    ax : Axes or None
+        Matplotlib axes to draw on. If None, a new figure is created.
+    save_path : str, Path, or None
+        If provided, saves the figure to this path at 150 DPI.
+
+    Returns
+    -------
+    Figure
+        The matplotlib Figure containing the chart.
+    """
     colors = THEME["colors"]
     color_map = {
         "Choi Lifecycle": colors["choi"],
