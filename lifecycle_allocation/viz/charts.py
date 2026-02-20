@@ -16,7 +16,7 @@ from lifecycle_allocation.viz.themes import THEME, apply_theme
 
 def _is_notebook() -> bool:
     try:
-        from IPython import get_ipython
+        from IPython import get_ipython  # type: ignore[import-not-found]
 
         return get_ipython() is not None
     except ImportError:
