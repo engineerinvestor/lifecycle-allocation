@@ -128,16 +128,27 @@ Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for developmen
 
 ## Citation
 
-If you use this library in academic work, please cite the underlying research:
+If you use this library in academic work, please cite both the underlying research and the software:
 
 ```bibtex
-@techreport{choi2024popular,
-  title={Popular Personal Financial Advice versus the Professors},
-  author={Choi, James J. and Markov, Adriana Z.},
-  year={2024},
+@techreport{choi2025practical,
+  title={Practical Finance: An Approximate Solution to Lifecycle Portfolio Choice},
+  author={Choi, James J. and Liu, Canyao and Liu, Pengcheng},
+  year={2025},
   institution={National Bureau of Economic Research},
-  number={w34166},
+  type={Working Paper},
+  number={34166},
+  doi={10.3386/w34166},
   url={https://www.nber.org/papers/w34166}
+}
+
+@software{engineerinvestor2025lifecycle,
+  title={lifecycle-allocation: A Lifecycle Portfolio Choice Framework},
+  author={{Engineer Investor}},
+  year={2025},
+  url={https://github.com/engineerinvestor/lifecycle-allocation},
+  version={0.1.0},
+  license={MIT}
 }
 ```
 
