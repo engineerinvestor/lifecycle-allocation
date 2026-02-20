@@ -4,15 +4,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import matplotlib
-import matplotlib.pyplot as plt
-import pandas as pd
-from matplotlib.axes import Axes
-from matplotlib.figure import Figure
-
-from lifecycle_allocation.core.models import AllocationResult, InvestorProfile
-from lifecycle_allocation.viz.themes import THEME, apply_theme
-
 
 def _is_notebook() -> bool:
     try:
@@ -23,8 +14,18 @@ def _is_notebook() -> bool:
         return False
 
 
+import matplotlib  # noqa: E402
+
 if not _is_notebook():
     matplotlib.use("Agg")
+
+import matplotlib.pyplot as plt  # noqa: E402
+import pandas as pd  # noqa: E402
+from matplotlib.axes import Axes  # noqa: E402
+from matplotlib.figure import Figure  # noqa: E402
+
+from lifecycle_allocation.core.models import AllocationResult, InvestorProfile  # noqa: E402
+from lifecycle_allocation.viz.themes import THEME, apply_theme  # noqa: E402
 
 
 def plot_balance_sheet(
