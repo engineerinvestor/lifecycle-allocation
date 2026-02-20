@@ -10,20 +10,20 @@ A Python library implementing a practical lifecycle portfolio choice framework i
 
 ## Why This Matters
 
-Most portfolio allocation "rules" are single-variable heuristics: 60/40, 100-minus-age, target-date funds. They ignore the biggest asset most people own -- their future earning power. A 30-year-old software engineer with $100k in savings and 35 years of income ahead is in a fundamentally different position than a 30-year-old retiree with the same $100k.
+Most portfolio allocation "rules" are single-variable heuristics: 60/40, 100-minus-age, target-date funds. They ignore the biggest asset most people own, their future earning power. A 30-year-old software engineer with $100k in savings and 35 years of income ahead is in a fundamentally different position than a 30-year-old retiree with the same $100k.
 
-This library takes a **balance-sheet** view of your finances. Your investable portfolio is only part of your total wealth. Future earnings (human capital) act like a bond-like asset, and accounting for them changes how much stock risk you should take. The result is a theoretically grounded, personalized allocation that evolves naturally over your lifecycle -- no arbitrary rules required.
+This library takes a **balance-sheet** view of your finances. Your investable portfolio is only part of your total wealth. Future earnings (human capital) act like a bond-like asset, and accounting for them changes how much stock risk you should take. The result is a theoretically grounded, personalized allocation that evolves naturally over your lifecycle, no arbitrary rules required.
 
 ## Features
 
-- **Core allocation engine** -- Merton-style optimal risky share adjusted for human capital
-- **4 income models** -- flat, constant-growth, age-profile, and CSV-based
-- **Strategy comparison** -- benchmark against 60/40, 100-minus-age, and target-date funds
-- **Visualization suite** -- balance sheet waterfall, glide paths, sensitivity tornado, heatmaps
-- **CLI interface** -- generate full reports from YAML/JSON profiles
-- **YAML/JSON profiles** -- declarative investor configuration
-- **Leverage support** -- two-tier borrowing rate model with configurable constraints
-- **Mortality adjustment** -- survival probability discounting for human capital
+- **Core allocation engine**: Merton-style optimal risky share adjusted for human capital
+- **4 income models**: flat, constant-growth, age-profile, and CSV-based
+- **Strategy comparison**: benchmark against 60/40, 100-minus-age, and target-date funds
+- **Visualization suite**: balance sheet waterfall, glide paths, sensitivity tornado, heatmaps
+- **CLI interface**: generate full reports from YAML/JSON profiles
+- **YAML/JSON profiles**: declarative investor configuration
+- **Leverage support**: two-tier borrowing rate model with configurable constraints
+- **Mortality adjustment**: survival probability discounting for human capital
 
 ## Install
 
@@ -89,7 +89,7 @@ This produces `allocation.json`, `summary.md`, and charts in `output/charts/`.
 2. Estimate **human capital** H as the present value of future earnings + retirement benefits, discounted by survival probability and a term structure
 3. Adjust: `alpha = alpha* x (1 + H/W)`, clamped to [0, 1] (or [0, L_max] with leverage)
 
-Young workers with high H/W ratios get higher equity allocations. As you age and accumulate financial wealth, H shrinks relative to W and the allocation naturally declines -- producing a lifecycle glide path from first principles rather than arbitrary rules.
+Young workers with high H/W ratios get higher equity allocations. As you age and accumulate financial wealth, H shrinks relative to W and the allocation naturally declines, producing a lifecycle glide path from first principles rather than arbitrary rules.
 
 ## Example Output
 

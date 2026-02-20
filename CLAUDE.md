@@ -84,6 +84,10 @@ The Python package is `lifecycle_allocation` (import name) / `lifecycle-allocati
 - **Commit as:** Engineer Investor (`egr.investor@gmail.com`)
 - Always use `git -c user.name="Engineer Investor" -c user.email="egr.investor@gmail.com" commit` when committing
 
+## Writing Style
+
+- **No em-dashes or double-dashes.** Never use `—` or `--` as punctuation in prose, markdown, or notebooks. Use a comma, period, colon, or semicolon instead.
+
 ## Edge Cases to Handle
 
 - `W <= 0`: default to raising an error with guidance
