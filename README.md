@@ -6,6 +6,7 @@ A Python library implementing a practical lifecycle portfolio choice framework i
 [![PyPI](https://img.shields.io/pypi/v/lifecycle-allocation)](https://pypi.org/project/lifecycle-allocation/)
 [![Python](https://img.shields.io/pypi/pyversions/lifecycle-allocation)](https://pypi.org/project/lifecycle-allocation/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://engineerinvestor.github.io/lifecycle-allocation)
 
 ## Why This Matters
 
