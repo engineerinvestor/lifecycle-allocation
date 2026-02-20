@@ -1,6 +1,6 @@
 # lifecycle-allocation
 
-**lifecycle-allocation** is a Python library for computing data-driven stock/bond allocation recommendations based on lifecycle portfolio theory. Instead of relying on rules of thumb like "100 minus your age," it treats your future earning power as an asset -- your human capital -- and uses it alongside your financial wealth to derive a personalized equity allocation grounded in economic theory.
+**lifecycle-allocation** is a Python library for computing data-driven stock/bond allocation recommendations based on lifecycle portfolio theory. Instead of relying on rules of thumb like "100 minus your age," it treats your future earning power as an asset, your human capital, and uses it alongside your financial wealth to derive a personalized equity allocation grounded in economic theory.
 
 The framework is inspired by [Choi et al. (2024)](https://www.nber.org/papers/w34166) and implements a Merton-style optimal risky share adjusted for human capital, with support for multiple income models, mortality adjustment, leverage constraints, and visual analytics.
 
