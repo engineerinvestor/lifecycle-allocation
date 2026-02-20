@@ -1,0 +1,26 @@
+age: 25
+retirement_age: 67
+investable_wealth: 25000
+after_tax_income: 70000
+risk_tolerance: 7
+
+income_model:
+  type: growth
+  g: 0.02
+
+benefit_model:
+  type: none
+
+mortality_model:
+  type: none
+
+discount_curve:
+  type: constant
+  rate: 0.02
+
+market:
+  mu: 0.05
+  r: 0.02
+  sigma: 0.18
+  real: true
+  borrowing_spread: 0.015
