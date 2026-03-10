@@ -23,7 +23,7 @@ pytest tests/test_allocation.py::test_name  # single test
 
 # Linting & formatting
 ruff check .
-black .
+ruff format .
 mypy lifecycle_allocation/
 
 # CLI
@@ -74,7 +74,7 @@ The Python package is `lifecycle_allocation` (import name) / `lifecycle-allocati
 
 - Python 3.10+
 - Type hints on all functions
-- `ruff` + `black` for formatting, `mypy` for type checking
+- `ruff` for linting and formatting, `mypy` for type checking
 - `pytest` for testing with coverage
 - Semantic versioning (v0.1 MVP → v0.5 → v1.0)
 

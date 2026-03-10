@@ -239,42 +239,46 @@ with st.sidebar:
 
     # --- Market Assumptions ---
     with st.expander("Market Assumptions"):
-        mu = st.slider(
+        mu_pct = st.slider(
             "Expected stock return",
-            min_value=0.02,
-            max_value=0.12,
-            value=0.05,
-            step=0.005,
+            min_value=2.0,
+            max_value=12.0,
+            value=5.0,
+            step=0.5,
             format="%.1f%%",
             help="Real (inflation-adjusted) expected annual return",
         )
-        r = st.slider(
+        r_pct = st.slider(
             "Risk-free rate",
-            min_value=0.00,
-            max_value=0.06,
-            value=0.02,
-            step=0.005,
+            min_value=0.0,
+            max_value=6.0,
+            value=2.0,
+            step=0.5,
             format="%.1f%%",
             help="Real risk-free rate (e.g., TIPS yield)",
         )
-        sigma = st.slider(
+        sigma_pct = st.slider(
             "Stock volatility",
-            min_value=0.10,
-            max_value=0.30,
-            value=0.18,
-            step=0.01,
+            min_value=10.0,
+            max_value=30.0,
+            value=18.0,
+            step=1.0,
             format="%.0f%%",
             help="Annualized standard deviation of stock returns",
         )
-        income_growth = st.slider(
+        income_growth_pct = st.slider(
             "Income growth rate",
-            min_value=0.00,
-            max_value=0.05,
-            value=0.02,
-            step=0.005,
+            min_value=0.0,
+            max_value=5.0,
+            value=2.0,
+            step=0.5,
             format="%.1f%%",
             help="Real annual income growth rate",
         )
+        mu = mu_pct / 100
+        r = r_pct / 100
+        sigma = sigma_pct / 100
+        income_growth = income_growth_pct / 100
 
 
 # ---------------------------------------------------------------------------
