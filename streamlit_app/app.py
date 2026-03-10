@@ -603,8 +603,7 @@ with tab3:
 with tab4:
     st.subheader("How It Works")
 
-    st.markdown(
-        """
+    st.markdown("""
 **Step 1: Estimate your human capital.**
 Your future earnings have a present value, just like a bond. We project your
 income forward, adjust for the chance you might not work every year, and
@@ -622,8 +621,7 @@ capital is typically bond-like (stable income), having a lot of it means you
 can afford to put a larger share of your *financial* wealth into stocks. As
 you age and your human capital shrinks, the model naturally reduces your stock
 allocation.
-"""
-    )
+""")
 
     st.subheader("Key Concepts")
 
@@ -695,11 +693,9 @@ allocation.
     )
 
     st.subheader("Links")
-    st.markdown(
-        """
+    st.markdown("""
 - [GitHub Repository](https://github.com/engineerinvestor/lifecycle-allocation)
 - [Documentation](https://engineerinvestor.github.io/lifecycle-allocation/)
 - Based on research by James Choi et al.,
   "Optimal Portfolio Choice: Lessons from Our Model" (NBER Working Paper 34166)
-"""
-    )
+""")
