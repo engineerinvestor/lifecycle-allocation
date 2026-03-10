@@ -1,0 +1,91 @@
+\documentclass[12pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{enumitem}
+\usepackage{parskip}
+
+% ── Fonts and spacing ──
+\renewcommand{\familydefault}{\sfdefault}
+\pagestyle{empty}
+
+% ── Colors ──
+\definecolor{accent}{HTML}{2E5090}
+\definecolor{lightgray}{HTML}{F2F2F2}
+
+\begin{document}
+
+% ── Title ──
+\begin{center}
+  {\LARGE\bfseries\color{accent} Why Your Job Affects How You Should Invest}\\[0.6em]
+  {\large Engineer Investor}\\[0.3em]
+  {\small\color{gray} \today}
+\end{center}
+
+\vspace{0.8em}
+\hrule height 0.4pt
+\vspace{1.0em}
+
+% ── Section 1 ──
+{\large\bfseries\color{accent} The Conventional Wisdom}
+
+Most financial advice tells young people to invest aggressively in stocks.
+The reasoning sounds intuitive: you have decades of future paychecks ahead of you,
+and that stream of income acts like a giant bond sitting in the background of your
+finances. If the market crashes, your salary keeps coming in, giving you plenty of
+time to recover. So load up on stocks while you are young.
+
+% ── Section 2 ──
+{\large\bfseries\color{accent} The Problem}
+
+That logic breaks down when your income is tied to the stock market. If you work in
+tech and a large share of your compensation comes from restricted stock units (RSUs),
+your pay rises and falls with equities. The same is true if you work in a cyclical
+industry prone to layoffs during downturns, or if your bonus depends on corporate
+profits. In these cases, your future earnings are not stable or bond-like at all.
+They behave more like stocks, which means you already have enormous, hidden equity
+exposure through your career.
+
+% ── Section 3 ──
+{\large\bfseries\color{accent} The Fix}
+
+The human capital beta framework solves this with a single number. Beta measures how
+closely your future earnings move with the stock market. A beta near zero means your
+income is steady regardless of market conditions. A high beta means your income swings
+in lockstep with equities. The model splits your human capital into a ``safe'' portion
+and a ``risky'' portion, then adjusts your recommended portfolio accordingly. The
+higher your beta, the less your career can cushion stock market losses, so the model
+tells you to hold a more conservative portfolio.
+
+% ── Section 4 ──
+{\large\bfseries\color{accent} What It Means for You}
+
+\begin{itemize}[leftmargin=1.5em, itemsep=0.6em]
+  \item \textbf{Government worker} (beta $\approx$ 0): Invest aggressively in your
+    portfolio. Your career income is very stable and acts like a large bond, giving
+    you capacity to take more risk with your investments.
+
+  \item \textbf{Tech worker with RSUs} (beta $\approx$ 0.6): Moderate your portfolio
+    risk. A meaningful share of your compensation already moves with the stock market,
+    so piling on more equity exposure in your brokerage account doubles down on the
+    same bet.
+
+  \item \textbf{Startup founder} (beta $\approx$ 0.8): Be conservative in your
+    portfolio. Your entire career is already a large equity bet. Your savings should
+    provide ballast, not amplify that risk.
+\end{itemize}
+
+\vfill
+
+% ── Footer ──
+\hrule height 0.4pt
+\vspace{0.5em}
+{\footnotesize\color{gray}
+\textbf{Disclaimer:} This document is for educational and research purposes only.
+It does not constitute investment advice. Consult a qualified financial advisor before
+making investment decisions.\\[0.3em]
+\textbf{Source:} \texttt{github.com/engineerinvestor/lifecycle-allocation} \enspace
+\textbar\enspace Based on Choi et al., ``Lifecycle Portfolio Choice'' (NBER Working Paper).}
+
+\end{document}

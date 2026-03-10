@@ -8,7 +8,8 @@ from pathlib import Path
 import click
 
 from lifecycle_allocation.core.allocation import recommended_stock_share
-from lifecycle_allocation.core.models import ConstraintsSpec, MarketAssumptions
+from lifecycle_allocation.core.human_capital import suggested_beta
+from lifecycle_allocation.core.models import ConstraintsSpec, HumanCapitalSpec, MarketAssumptions
 from lifecycle_allocation.core.strategies import compare_strategies
 from lifecycle_allocation.io.loaders import load_profile
 from lifecycle_allocation.viz.charts import plot_balance_sheet, plot_strategy_bars
@@ -32,6 +33,8 @@ def cli() -> None:
 @click.option("--borrowing-spread", type=float, default=None)
 @click.option("--format", "img_format", type=click.Choice(["png", "svg"]), default="png")
 @click.option("--real/--nominal", default=True)
+@click.option("--hc-beta", type=float, default=None, help="HC beta (0=bond, 1=equity)")
+@click.option("--hc-industry", type=str, default=None, help="Industry for HC beta lookup")
 def alloc(
     profile_path: str,
     out_dir: str,
@@ -45,6 +48,8 @@ def alloc(
     borrowing_spread: float | None,
     img_format: str,
     real: bool,
+    hc_beta: float | None,
+    hc_industry: str | None,
 ) -> None:
     """Compute lifecycle allocation from a profile.
 
@@ -59,6 +64,16 @@ def alloc(
     Output files: allocation.json, summary.md, and optionally charts/.
     """
     profile, market, curve, constraints = load_profile(profile_path)
+
+    # Apply human capital beta override from CLI flags
+    if hc_beta is not None or hc_industry is not None:
+        beta_val = hc_beta
+        if beta_val is None and hc_industry is not None:
+            beta_val = suggested_beta(hc_industry)
+        profile.human_capital_model = HumanCapitalSpec(
+            beta=beta_val if beta_val is not None else 0.0,
+            industry=hc_industry or profile.human_capital_model.industry,
+        )
 
     # Apply CLI overrides to market assumptions. Each flag, if provided,
     # replaces the corresponding value from the YAML profile.

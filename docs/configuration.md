@@ -34,6 +34,11 @@ mortality_model:
   # dispersion: 10               # Dispersion parameter (parametric model)
   # path: survival.csv           # CSV with survival probabilities (table model)
 
+# === Human Capital Risk ===
+human_capital_model:
+  beta: 0.0                      # 0=bond-like, 1=equity-like (default: 0.0)
+  # industry: tech_with_rsus     # Auto-resolves beta via suggested_beta()
+
 # === Discount Curve ===
 discount_curve:
   type: constant                 # "constant" or "term_structure"
@@ -96,6 +101,22 @@ constraints:
 | `mode` | float | 0.0 | Modal age of death (parametric) |
 | `dispersion` | float | 0.0 | Dispersion parameter (parametric) |
 | `path` | str | None | Path to survival CSV (table) |
+
+### human_capital_model
+
+| Field | Type | Default | Description |
+|---|---|---|---|
+| `beta` | float | 0.0 | Equity-like fraction of human capital. 0 = fully bond-like, 1 = fully equity-like |
+| `industry` | str | None | Industry identifier. If provided without `beta`, resolves via `suggested_beta()` |
+
+When `industry` is provided without `beta`, the beta is automatically looked up from the calibration table. See [Risky Human Capital](risky-human-capital.md) for the full industry table.
+
+**Example: Tech worker with RSUs**
+
+```yaml
+human_capital_model:
+  industry: tech_with_rsus   # resolves to beta=0.60
+```
 
 ### discount_curve
 

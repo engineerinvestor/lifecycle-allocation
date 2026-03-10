@@ -57,6 +57,25 @@ alpha_t = clamp(alpha* x (1 + H_t / W_t), 0, upper)
 
 Where `upper` is 1.0 by default, or `max_leverage` when leverage is enabled.
 
+## Risk-Adjusted Human Capital
+
+The standard model treats all human capital as bond-like. This fails for workers whose income is significantly correlated with equity markets (tech workers with RSUs, startup founders, commission-based sales). The **human capital beta** parameter `beta_H` in [0, 1] captures this:
+
+```
+H_bond = (1 - beta_H) x H      (bond-like portion)
+H_equity = beta_H x H           (equity-like portion)
+```
+
+The modified allocation formula:
+
+```
+alpha_t = clamp(alpha* x (1 + (1 - beta_H) x H_t / W_t), 0, upper)
+```
+
+When `beta_H = 0` (default), this recovers the standard model. When `beta_H = 1`, the allocation reduces to `alpha*` because human capital provides no diversification benefit. The allocation is monotonically non-increasing in `beta_H`.
+
+Industry-specific betas are calibrated from Davis & Willen (2000) and Benzoni et al. (2007). See the [Risky Human Capital](risky-human-capital.md) page for the full calibration table and derivation.
+
 ## Two-Tier Borrowing Rate Model
 
 When leverage is allowed, borrowing to invest is not free. The model uses a higher rate for the borrowing regime:
@@ -226,7 +245,7 @@ When leverage is enabled and the computed allocation exceeds 1.0, the explanatio
 ## Limitations and Assumptions
 
 - **Single-asset risky class:** The model considers only a stock/bond split, not multi-asset allocation.
-- **Deterministic income:** Human capital is computed from expected (mean) income paths. Income volatility and correlation with stock returns are not modeled.
+- **Deterministic income:** Human capital is computed from expected (mean) income paths. Income volatility is not fully modeled, though the human capital beta extension partially addresses the correlation between income and stock returns.
 - **No taxes:** All computations are pre-tax or assume a single effective tax rate embedded in the income figures.
 - **No housing:** Home equity and mortgage obligations are excluded from the balance sheet.
 - **Static optimization:** The model computes a single-period allocation, not a dynamic strategy with rebalancing.

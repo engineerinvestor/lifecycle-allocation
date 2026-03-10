@@ -11,6 +11,59 @@ from lifecycle_allocation.core.models import (
 )
 from lifecycle_allocation.core.mortality import survival_prob
 
+# Industry beta calibration table.
+# Values reflect the fraction of human capital that behaves like equity,
+# calibrated from Davis & Willen (2000), Benzoni et al. (2007), and
+# compensation structure analysis. Higher beta = more equity-like income.
+INDUSTRY_BETAS: dict[str, float] = {
+    "government": 0.00,
+    "education_tenured": 0.00,
+    "healthcare": 0.10,
+    "utilities": 0.10,
+    "consumer_staples": 0.15,
+    "education_non_tenured": 0.20,
+    "manufacturing": 0.25,
+    "professional_services": 0.30,
+    "general_private_sector": 0.30,
+    "media_entertainment": 0.35,
+    "real_estate": 0.40,
+    "tech_salaried": 0.40,
+    "construction": 0.45,
+    "finance_banking": 0.45,
+    "oil_gas": 0.50,
+    "finance_trading": 0.55,
+    "tech_with_rsus": 0.60,
+    "commission_sales": 0.70,
+    "tech_startup": 0.75,
+    "startup_equity_heavy": 0.85,
+}
+
+
+def suggested_beta(industry: str) -> float:
+    """Look up the suggested human capital beta for an industry.
+
+    Parameters
+    ----------
+    industry : str
+        Industry identifier (e.g., ``"tech_with_rsus"``, ``"government"``).
+        Must be a key in ``INDUSTRY_BETAS``.
+
+    Returns
+    -------
+    float
+        Suggested beta value in [0, 1].
+
+    Raises
+    ------
+    ValueError
+        If the industry is not recognized.
+    """
+    key = industry.lower().strip()
+    if key not in INDUSTRY_BETAS:
+        valid = ", ".join(sorted(INDUSTRY_BETAS.keys()))
+        raise ValueError(f"Unknown industry '{industry}'. Valid industries: {valid}")
+    return INDUSTRY_BETAS[key]
+
 
 def expected_benefit(age: int, spec: BenefitModelSpec, profile: InvestorProfile) -> float:
     """Compute expected retirement benefit at a given age.

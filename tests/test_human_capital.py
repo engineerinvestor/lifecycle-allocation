@@ -5,7 +5,12 @@ import tempfile
 
 import pytest
 
-from lifecycle_allocation.core.human_capital import expected_benefit, human_capital_pv
+from lifecycle_allocation.core.human_capital import (
+    INDUSTRY_BETAS,
+    expected_benefit,
+    human_capital_pv,
+    suggested_beta,
+)
 from lifecycle_allocation.core.income_models import expected_income
 from lifecycle_allocation.core.models import (
     BenefitModelSpec,
@@ -197,6 +202,45 @@ class TestHumanCapitalPV:
         profile = _make_profile(after_tax_income=None)
         h = human_capital_pv(profile)
         assert h == pytest.approx(0.0)
+
+
+class TestIndustryBetas:
+    def test_all_betas_in_valid_range(self) -> None:
+        for industry, beta in INDUSTRY_BETAS.items():
+            assert 0.0 <= beta <= 1.0, f"{industry} has beta={beta} outside [0,1]"
+
+    def test_government_is_zero(self) -> None:
+        assert INDUSTRY_BETAS["government"] == 0.0
+
+    def test_startup_equity_heavy_is_high(self) -> None:
+        assert INDUSTRY_BETAS["startup_equity_heavy"] >= 0.8
+
+    def test_suggested_beta_known_industry(self) -> None:
+        assert suggested_beta("tech_with_rsus") == pytest.approx(0.60)
+        assert suggested_beta("government") == pytest.approx(0.00)
+
+    def test_suggested_beta_case_insensitive(self) -> None:
+        assert suggested_beta("Tech_With_RSUs") == pytest.approx(0.60)
+
+    def test_suggested_beta_unknown_raises(self) -> None:
+        with pytest.raises(ValueError, match="Unknown industry"):
+            suggested_beta("underwater_basket_weaving")
+
+    def test_table_has_expected_industries(self) -> None:
+        expected = [
+            "government",
+            "education_tenured",
+            "healthcare",
+            "utilities",
+            "tech_salaried",
+            "tech_with_rsus",
+            "tech_startup",
+            "startup_equity_heavy",
+            "finance_banking",
+            "commission_sales",
+        ]
+        for ind in expected:
+            assert ind in INDUSTRY_BETAS
 
 
 class TestExpectedBenefit:

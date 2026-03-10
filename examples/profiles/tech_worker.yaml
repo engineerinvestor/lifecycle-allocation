@@ -1,0 +1,34 @@
+# Tech Worker Profile
+# A 30-year-old software engineer with RSU-heavy compensation. Their human
+# capital is significantly equity-like (beta=0.60), which reduces the
+# recommended equity allocation compared to the standard model.
+
+age: 30                      # Current age
+retirement_age: 67           # Expected retirement age
+investable_wealth: 150000    # Current investable portfolio ($)
+after_tax_income: 120000     # Current annual after-tax income ($)
+risk_tolerance: 6            # 1-10 scale (6 = moderate-aggressive)
+
+income_model:
+  type: growth               # Income grows at a constant real rate
+  g: 0.03                    # 3% annual real income growth (tech career trajectory)
+
+benefit_model:
+  type: none                 # No retirement benefits modeled
+
+mortality_model:
+  type: none                 # Assume survival to T_max
+
+human_capital_model:
+  industry: tech_with_rsus   # Resolves to beta=0.60 via industry lookup
+
+discount_curve:
+  type: constant             # Flat discount rate for human capital PV
+  rate: 0.02                 # 2% annual real discount rate
+
+market:
+  mu: 0.05                   # Expected annual stock return (real)
+  r: 0.02                    # Risk-free rate (real)
+  sigma: 0.18                # Annual stock volatility
+  real: true                 # All returns are in real terms
+  borrowing_spread: 0.015    # 150 bps above r for margin borrowing

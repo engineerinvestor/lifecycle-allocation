@@ -67,3 +67,46 @@ class TestLoadProfile:
                     load_profile(f.name)
             finally:
                 os.unlink(f.name)
+
+    def test_human_capital_model_with_beta(self) -> None:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
+            f.write(
+                "age: 30\ninvestable_wealth: 100000\nrisk_tolerance: 5\n"
+                "human_capital_model:\n  beta: 0.6\n"
+            )
+            f.flush()
+            try:
+                profile, _, _, _ = load_profile(f.name)
+                assert profile.human_capital_model.beta == pytest.approx(0.6)
+            finally:
+                os.unlink(f.name)
+
+    def test_human_capital_model_with_industry(self) -> None:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
+            f.write(
+                "age: 30\ninvestable_wealth: 100000\nrisk_tolerance: 5\n"
+                "human_capital_model:\n  industry: tech_with_rsus\n"
+            )
+            f.flush()
+            try:
+                profile, _, _, _ = load_profile(f.name)
+                assert profile.human_capital_model.beta == pytest.approx(0.6)
+                assert profile.human_capital_model.industry == "tech_with_rsus"
+            finally:
+                os.unlink(f.name)
+
+    def test_human_capital_model_default(self) -> None:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
+            f.write("age: 30\ninvestable_wealth: 100000\nrisk_tolerance: 5\n")
+            f.flush()
+            try:
+                profile, _, _, _ = load_profile(f.name)
+                assert profile.human_capital_model.beta == pytest.approx(0.0)
+            finally:
+                os.unlink(f.name)
+
+    def test_tech_worker_profile(self) -> None:
+        profile, market, curve, constraints = load_profile("examples/profiles/tech_worker.yaml")
+        assert profile.age == 30
+        assert profile.human_capital_model.beta == pytest.approx(0.6)
+        assert profile.human_capital_model.industry == "tech_with_rsus"

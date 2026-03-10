@@ -160,8 +160,14 @@ def recommended_stock_share(
     h = human_capital_pv(profile, curve, t_max=t_max)
     w = profile.investable_wealth
 
-    # Raw allocation with human capital adjustment
-    alpha_unconstrained = a_star * (1.0 + h / w)
+    # Decompose human capital into bond-like and equity-like components.
+    # Only the bond-like portion diversifies the portfolio.
+    beta_h = profile.human_capital_model.beta
+    h_bond = (1.0 - beta_h) * h
+    h_equity = beta_h * h
+
+    # Raw allocation with human capital adjustment (beta-adjusted)
+    alpha_unconstrained = a_star * (1.0 + h_bond / w)
 
     # Clamp
     upper = constraints.max_leverage if constraints.allow_leverage else 1.0
@@ -174,6 +180,9 @@ def recommended_stock_share(
     # for user inspection via AllocationResult.components
     components = {
         "human_capital": h,
+        "human_capital_beta": beta_h,
+        "human_capital_bond_like": h_bond,
+        "human_capital_equity_like": h_equity,
         "investable_wealth": w,
         "hw_ratio": h / w,
         "gamma": gamma,

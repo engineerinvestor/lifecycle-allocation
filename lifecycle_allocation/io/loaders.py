@@ -6,10 +6,12 @@ from pathlib import Path
 
 import yaml
 
+from lifecycle_allocation.core.human_capital import suggested_beta
 from lifecycle_allocation.core.models import (
     BenefitModelSpec,
     ConstraintsSpec,
     DiscountCurveSpec,
+    HumanCapitalSpec,
     IncomeModelSpec,
     InvestorProfile,
     MarketAssumptions,
@@ -78,6 +80,17 @@ def load_profile(
         type=mortality_data.get("type", "none"),
     )
 
+    # Human capital model
+    hc_data = data.get("human_capital_model", {})
+    hc_beta = hc_data.get("beta")
+    hc_industry = hc_data.get("industry")
+    if hc_beta is None and hc_industry is not None:
+        hc_beta = suggested_beta(hc_industry)
+    human_capital_model = HumanCapitalSpec(
+        beta=hc_beta if hc_beta is not None else 0.0,
+        industry=hc_industry,
+    )
+
     # Profile
     profile = InvestorProfile(
         age=data["age"],
@@ -89,6 +102,7 @@ def load_profile(
         income_model=income_model,
         benefit_model=benefit_model,
         mortality_model=mortality_model,
+        human_capital_model=human_capital_model,
     )
 
     # Market assumptions

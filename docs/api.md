@@ -9,6 +9,8 @@ from lifecycle_allocation import (
     BenefitModelSpec,
     ConstraintsSpec,
     DiscountCurveSpec,
+    HumanCapitalSpec,
+    INDUSTRY_BETAS,
     IncomeModelSpec,
     InvestorProfile,
     MarketAssumptions,
@@ -19,6 +21,7 @@ from lifecycle_allocation import (
     human_capital_pv,
     recommended_stock_share,
     risk_tolerance_to_gamma,
+    suggested_beta,
 )
 ```
 
@@ -41,6 +44,7 @@ InvestorProfile(
     income_model: IncomeModelSpec = IncomeModelSpec(),
     benefit_model: BenefitModelSpec = BenefitModelSpec(),
     mortality_model: MortalitySpec = MortalitySpec(),
+    human_capital_model: HumanCapitalSpec = HumanCapitalSpec(),
 )
 ```
 
@@ -55,6 +59,7 @@ InvestorProfile(
 | `income_model` | `IncomeModelSpec` | Income projection model |
 | `benefit_model` | `BenefitModelSpec` | Retirement benefit model |
 | `mortality_model` | `MortalitySpec` | Survival probability model |
+| `human_capital_model` | `HumanCapitalSpec` | Human capital risk (beta). Default: all bond-like |
 
 **Property:** `profile.gamma` resolves the risk aversion coefficient from either field.
 
@@ -130,6 +135,33 @@ BenefitModelSpec(
 | `annual_benefit` | `float` | 0.0 | Fixed annual benefit ($). Takes priority over `replacement_rate` |
 | `replacement_rate` | `float` | 0.0 | Fraction of income received as benefit |
 
+### `HumanCapitalSpec`
+
+Specification for human capital risk characteristics.
+
+```python
+HumanCapitalSpec(
+    beta: float = 0.0,
+    industry: str | None = None,
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `beta` | `float` | 0.0 | Equity-like fraction of HC. Must be in [0, 1] |
+| `industry` | `str \| None` | None | Industry identifier for beta lookup |
+
+```python
+from lifecycle_allocation import HumanCapitalSpec, suggested_beta
+
+# Explicit beta
+hc = HumanCapitalSpec(beta=0.6)
+
+# From industry
+beta = suggested_beta("tech_with_rsus")  # 0.6
+hc = HumanCapitalSpec(beta=beta, industry="tech_with_rsus")
+```
+
 ### `MortalitySpec`
 
 Specification for mortality/survival model.
@@ -199,7 +231,7 @@ Result of an allocation computation.
 | `leverage_applied` | `bool` | Whether the result uses leverage |
 | `borrowing_cost_drag` | `float` | Alpha reduction due to borrowing spread |
 | `explain` | `str` | Human-readable explanation |
-| `components` | `dict` | All intermediate values |
+| `components` | `dict` | All intermediate values (includes `human_capital_beta`, `human_capital_bond_like`, `human_capital_equity_like`) |
 
 ---
 
@@ -315,6 +347,35 @@ Returns a DataFrame with columns: `strategy`, `allocation`, `description`.
 ```python
 df = compare_strategies(profile, market)
 print(df.to_string(index=False))
+```
+
+### `suggested_beta`
+
+Look up the suggested human capital beta for an industry.
+
+```python
+suggested_beta(industry: str) -> float
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `industry` | `str` | Industry identifier (e.g., `"tech_with_rsus"`, `"government"`) |
+
+```python
+from lifecycle_allocation import suggested_beta
+beta = suggested_beta("tech_with_rsus")  # 0.6
+```
+
+Raises `ValueError` if the industry is not recognized. See [Risky Human Capital](risky-human-capital.md) for the full table.
+
+### `INDUSTRY_BETAS`
+
+Dictionary mapping industry identifiers to calibrated human capital beta values.
+
+```python
+from lifecycle_allocation import INDUSTRY_BETAS
+print(INDUSTRY_BETAS["tech_with_rsus"])  # 0.6
+print(list(INDUSTRY_BETAS.keys()))       # all available industries
 ```
 
 ### `risk_tolerance_to_gamma`
