@@ -309,10 +309,22 @@ st.markdown(
     "wealth, job stability, and risk tolerance."
 )
 
-col1, col2, col3 = st.columns(3)
+col1, col2, col3, col4 = st.columns(4)
 col1.metric("Recommended Equity", f"{result.alpha_recommended:.0%}")
-col2.metric("Human Capital", f"${h:,.0f}")
-col3.metric("H/W Ratio", f"{hw_ratio:.1f}x")
+col2.metric("Merton Ratio (\u03b1*)", f"{result.alpha_star:.0%}")
+col3.metric("Human Capital", f"${h:,.0f}")
+col4.metric("H/W Ratio", f"{hw_ratio:.1f}x")
+
+if result.alpha_unconstrained > 1.0:
+    st.info(
+        f"Your unconstrained allocation is {result.alpha_unconstrained:.0%}, "
+        f"capped at 100%. Your human capital is so large relative to your "
+        f"financial wealth (H/W = {hw_ratio:.1f}x) that even a modest Merton "
+        f"ratio ({result.alpha_star:.0%}) produces a recommendation above 100%. "
+        f"Market assumption changes affect the Merton ratio but may not change "
+        f"the final recommendation until your H/W ratio decreases (as you age "
+        f"and save more)."
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -394,6 +406,57 @@ with tab1:
     # Explanation
     with st.expander("Detailed Explanation"):
         st.text(result.explain)
+
+    # Market assumptions sensitivity heatmap
+    st.subheader("Market Assumptions Sensitivity")
+    st.markdown(
+        "This heatmap shows how your recommended equity allocation changes "
+        "across different equity premiums and volatility levels. Each cell "
+        "uses your current profile inputs."
+    )
+
+    eq_premiums = np.arange(0.01, 0.085, 0.01)
+    sigmas_range = np.arange(0.10, 0.32, 0.02)
+    heat_z: list[list[float]] = []
+    for s_val in sigmas_range:
+        row: list[float] = []
+        for ep in eq_premiums:
+            mu_val = r + ep
+            r_cell = _compute_allocation(
+                age,
+                retirement_age,
+                income,
+                wealth,
+                risk_tolerance,
+                beta,
+                float(mu_val),
+                r,
+                float(s_val),
+                income_growth,
+            )
+            row.append(r_cell.alpha_recommended)
+        heat_z.append(row)
+
+    heat_fig = go.Figure(
+        go.Heatmap(
+            z=heat_z,
+            x=[f"{ep:.0%}" for ep in eq_premiums],
+            y=[f"{s:.0%}" for s in sigmas_range],
+            colorscale="RdYlGn",
+            zmin=0,
+            zmax=1,
+            text=[[f"{v:.0%}" for v in row] for row in heat_z],
+            texttemplate="%{text}",
+            colorbar=dict(title="Equity %", tickformat=".0%"),
+        )
+    )
+    heat_fig.update_layout(
+        xaxis_title="Equity Premium (mu \u2212 r)",
+        yaxis_title="Volatility (\u03c3)",
+        height=420,
+        margin=dict(t=20, b=40),
+    )
+    st.plotly_chart(heat_fig, use_container_width=True)
 
 
 # ---- Tab 2: How Your Job Matters --------------------------------------------
