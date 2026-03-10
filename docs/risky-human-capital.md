@@ -71,6 +71,33 @@ Human capital contains embedded financial options that affect its risk profile:
 - **Career mobility**: A real option to switch industries or employers. Increases with skills breadth, decreases with specialization.
 - **Non-competes / golden handcuffs**: Reduce optionality, making human capital more concentrated and risky.
 
+## Concentration Risk: What Beta Does Not Capture
+
+The beta parameter captures the *systematic* correlation between your income and the broad stock market. It does not account for the additional risks of holding a concentrated position in a single company's stock. If a significant portion of your compensation is in employer RSUs or startup equity, several risks go beyond what beta reflects:
+
+### Single-stock volatility vs. market volatility
+
+The `sigma` used in the Merton ratio is broad market volatility, typically around 18%. Individual stocks have much higher volatility, often 40-60%+. Beta maps your income to market-correlated risk, but the remaining firm-specific volatility (which can be enormous for a single stock) is not captured in the allocation formula.
+
+### Skewness and left-tail risk
+
+A diversified stock market cannot go to zero; a single company can. The CRRA/Merton framework assumes log-normal returns, which understates the catastrophic downside of concentrated positions. For someone whose human capital is tied to one stock, the distribution of total-wealth outcomes is highly skewed, with severe downside scenarios that a normal distribution underestimates.
+
+### Uncompensated risk
+
+Diversified market exposure earns the equity risk premium. Single-stock exposure carries idiosyncratic risk that is *not compensated* by higher expected returns in equilibrium. The beta framework treats the equity-like portion of human capital as if it earned the market premium, but concentrated positions bear extra risk without extra reward.
+
+### The "double whammy"
+
+In downturns, the correlation between your employer's stock price, layoff probability, and RSU forfeiture all spike simultaneously. A single scalar beta captures average correlation but misses this regime-dependent, asymmetric tail dependence. The practical consequence is that the worst outcomes (stock crashes, layoffs, and forfeiture) tend to cluster together.
+
+### Practical guidance
+
+- **Treat the model's allocation as a floor.** If you hold concentrated equity, the appropriate reduction in your portfolio's stock allocation is likely *larger* than what beta alone suggests.
+- **Diversify vested RSUs.** As shares vest, consider selling and reinvesting in a diversified portfolio. A 10b5-1 trading plan can automate this on a pre-set schedule.
+- **Evaluate combined risk.** Look at your unvested RSUs, vested but unsold employer stock, and your investment portfolio as a single balance sheet. The total equity exposure may be much higher than your brokerage account alone suggests.
+- **Do not change the formula.** The right tool for concentration risk is diversification advice, not a different allocation model. Adding a concentration penalty or skew adjustment would undermine the parsimony that makes the framework useful.
+
 ## Worked Example
 
 ### Standard Model (beta = 0)

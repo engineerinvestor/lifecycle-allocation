@@ -105,8 +105,15 @@ def build_explanation(components: dict[str, Any], constraints: ConstraintsSpec |
         lines.append(
             "WARNING: High equity-like human capital concentration (beta >= 0.50). "
             "Your income is significantly correlated with stock market performance. "
-            "Consider the combined risk of your portfolio and your career when making "
-            "investment decisions."
+            "Note that beta captures market correlation but not single-stock "
+            "concentration risk. If your equity exposure is in a single company "
+            "(e.g., employer RSUs or startup equity), the true risk is higher than "
+            "beta alone reflects: individual stocks carry 40-60%+ volatility versus "
+            "~18% for the broad market, and a downturn can simultaneously reduce your "
+            "stock value, increase layoff risk, and trigger RSU forfeiture. The "
+            "allocation above is a lower bound; concentrated positions may warrant "
+            "further reduction. Consider diversifying vested shares and evaluating "
+            "the combined risk of your unvested equity plus your investment portfolio."
         )
 
     if a_unconstrained != a_recommended:

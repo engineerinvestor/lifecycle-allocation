@@ -681,12 +681,47 @@ housing prices rather than equity returns. A multi-factor extension, using
 the \citet{fama1993} framework, could decompose human capital risk into
 market, size, value, and industry factors.
 
-\textbf{Idiosyncratic risk.} The parameter $\beta_H$ captures only
-systematic risk. Firm-specific risk, such as a single-company RSU
-concentration, creates additional uncompensated risk that is not reflected
-in $\beta_H$. The practical implication is that our framework provides a
-lower bound on the appropriate equity reduction: concentrated positions
-warrant even lower equity allocations than $\beta_H$ alone suggests.
+\textbf{Idiosyncratic risk and single-stock concentration.} The parameter
+$\beta_H$ captures only systematic (market-correlated) risk. Firm-specific
+risk, such as a single-company RSU concentration, creates additional
+uncompensated risk that is not reflected in $\beta_H$. Several dimensions
+of this gap deserve emphasis.
+
+First, individual stock volatility far exceeds market volatility. Broad
+market $\sigma$ is approximately 18\% annualized, while individual large-cap
+stocks typically exhibit $\sigma$ of 35--50\% and smaller or pre-IPO firms
+can exceed 60\%. The Merton ratio uses market $\sigma$, so the allocation
+formula does not reflect the true volatility borne by an investor whose
+human capital is tied to a single firm.
+
+Second, single-stock return distributions exhibit heavier left tails and
+greater negative skewness than the market. A diversified index cannot go to
+zero; an individual company can. The CRRA/log-normal framework underlying
+the Merton ratio understates the probability of catastrophic loss for
+concentrated positions.
+
+Third, idiosyncratic risk is uncompensated in equilibrium. Diversified
+investors are not rewarded with higher expected returns for bearing
+firm-specific risk. The beta framework implicitly treats the equity-like
+portion of human capital as if it earned the market risk premium, but a
+concentrated position in employer stock earns no additional premium for the
+extra risk it carries.
+
+Fourth, the correlation structure between employer stock price, layoff
+probability, and RSU forfeiture is asymmetric: these risks are modestly
+correlated in normal times but spike together in downturns. A scalar
+$\beta_H$ captures the average correlation but misses this
+regime-dependent tail dependence.
+
+The practical implication is that our framework provides a \emph{lower bound}
+on the appropriate equity reduction: concentrated positions warrant even
+lower equity allocations than $\beta_H$ alone suggests. The correct remedy
+for concentration risk, however, is diversification of existing holdings
+(e.g., selling vested RSUs, 10b5-1 plans), not a different allocation
+formula. Introducing a concentration penalty or higher-moment adjustment
+would sacrifice the parsimony that makes the single-parameter extension
+tractable and would conflate two distinct problems: optimal allocation of
+new savings versus management of existing concentrated positions.
 
 \textbf{Behavioral considerations.} Our model assumes rational investors
 who can and will rebalance their financial portfolios. In practice, mental
