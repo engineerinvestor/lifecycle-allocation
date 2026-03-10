@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-03-09
+
+### Added
+
+- Human capital beta framework: industry-specific betas decompose human capital into bond-like and equity-like components, producing lower equity allocations for workers with market-correlated income (tech RSUs, startups, commission sales)
+- Industry beta lookup table with 20 calibrated industries from government (beta=0) to equity-heavy startups (beta=0.85)
+- Concentration risk framing across Streamlit app, documentation, academic paper, and explain text, warning that beta is a lower bound when holding single-stock positions
+- Interactive Streamlit app (`streamlit_app/app.py`) with balance sheet waterfall, beta sensitivity chart, lifecycle glide path, industry comparison table, and educational content
+- Risky human capital academic paper (`papers/risky_human_capital.tex`) with formal derivation, calibration, and case studies
+- Risky human capital documentation page (`docs/risky-human-capital.md`)
+- Risky human capital tutorial notebook with Colab support
+
+### Changed
+
+- `explain.py` beta >= 0.50 warning now describes single-stock concentration risk and practical guidance
+- Streamlit badge added to README
+
 ## [0.1.0] - 2025-02-19
 
 ### Added
@@ -24,5 +41,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Interactive tutorial notebook with Colab support covering the full library API
 - Full test suite with >90% code coverage
 
-[Unreleased]: https://github.com/engineerinvestor/lifecycle-allocation/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/engineerinvestor/lifecycle-allocation/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/engineerinvestor/lifecycle-allocation/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/engineerinvestor/lifecycle-allocation/releases/tag/v0.1.0

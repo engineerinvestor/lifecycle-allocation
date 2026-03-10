@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lifecycle-allocation"
-version = "0.1.0"
+version = "0.2.0"
 description = "Lifecycle portfolio allocation framework inspired by Choi et al."
 readme = "README.md"
 license = "MIT"
@@ -40,6 +40,10 @@ dev = [
     "mypy>=1.0",
     "types-PyYAML>=6.0",
     "pandas-stubs>=2.0",
+]
+streamlit = [
+    "streamlit>=1.30",
+    "plotly>=5.18",
 ]
 docs = [
     "mkdocs>=1.5",

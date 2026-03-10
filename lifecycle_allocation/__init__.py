@@ -1,6 +1,6 @@
 """Lifecycle portfolio allocation framework inspired by Choi et al."""
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 from lifecycle_allocation.core.allocation import alpha_star, recommended_stock_share
 from lifecycle_allocation.core.human_capital import (

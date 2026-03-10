@@ -1,0 +1,5 @@
+# Streamlit Cloud: this file takes precedence over pyproject.toml.
+# For library development, use: pip install -e ".[dev]"
+.
+streamlit>=1.30
+plotly>=5.18
