@@ -156,6 +156,42 @@ fig = plot_strategy_bars(df, save_path="strategy_bars.png")
 
 Both functions return a matplotlib `Figure` and optionally save to disk.
 
+## 7. Adjust for Risky Human Capital
+
+If your income is correlated with the stock market (tech RSUs, startups, commission sales), set the human capital beta:
+
+**Python:**
+
+```python
+from lifecycle_allocation import HumanCapitalSpec, InvestorProfile, MarketAssumptions, recommended_stock_share
+
+profile = InvestorProfile(
+    age=30, retirement_age=67,
+    investable_wealth=150_000,
+    after_tax_income=120_000,
+    risk_tolerance=6,
+    human_capital_model=HumanCapitalSpec(beta=0.6),  # tech with RSUs
+)
+result = recommended_stock_share(profile, MarketAssumptions())
+```
+
+**YAML:**
+
+```yaml
+human_capital_model:
+  industry: tech_with_rsus   # auto-resolves to beta=0.60
+```
+
+**CLI:**
+
+```bash
+lifecycle-allocation alloc --profile my_profile.yaml --hc-beta 0.6 --out ./output
+# or
+lifecycle-allocation alloc --profile my_profile.yaml --hc-industry tech_with_rsus --out ./output
+```
+
+See [Risky Human Capital](risky-human-capital.md) for the full industry table and methodology.
+
 ## Next Steps
 
 - [Configuration](configuration.md) -- full reference for all YAML/JSON profile fields

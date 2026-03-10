@@ -76,13 +76,38 @@ def build_explanation(components: dict[str, Any], constraints: ConstraintsSpec |
     lines.append("")
     lines.append(f"Baseline risky share (alpha*): {a_star:.1%}")
 
+    beta_h = components.get("human_capital_beta", 0.0)
+    h_bond = components.get("human_capital_bond_like", h)
+    h_equity = components.get("human_capital_equity_like", 0.0)
+
+    if beta_h > 0:
+        lines.append(f"Human capital beta: {beta_h:.2f} (equity-like fraction)")
+        lines.append(f"  Bond-like H: ${h_bond:,.0f} ({(1 - beta_h):.0%})")
+        lines.append(f"  Equity-like H: ${h_equity:,.0f} ({beta_h:.0%})")
+
     if hw_ratio > 0:
-        lines.append(
-            f"Human capital adjustment: alpha* x (1 + H/W) = "
-            f"{a_star:.1%} x (1 + {hw_ratio:.2f}) = {a_unconstrained:.1%}"
-        )
+        if beta_h > 0:
+            h_bond_w_ratio = h_bond / w if w > 0 else 0.0
+            lines.append(
+                f"Human capital adjustment: alpha* x (1 + H_bond/W) = "
+                f"{a_star:.1%} x (1 + {h_bond_w_ratio:.2f}) = {a_unconstrained:.1%}"
+            )
+        else:
+            lines.append(
+                f"Human capital adjustment: alpha* x (1 + H/W) = "
+                f"{a_star:.1%} x (1 + {hw_ratio:.2f}) = {a_unconstrained:.1%}"
+            )
     else:
         lines.append("No human capital adjustment (H = 0).")
+
+    if beta_h >= 0.5:
+        lines.append("")
+        lines.append(
+            "WARNING: High equity-like human capital concentration (beta >= 0.50). "
+            "Your income is significantly correlated with stock market performance. "
+            "Consider the combined risk of your portfolio and your career when making "
+            "investment decisions."
+        )
 
     if a_unconstrained != a_recommended:
         lines.append(f"After constraints: {a_recommended:.1%}")

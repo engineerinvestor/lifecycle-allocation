@@ -12,11 +12,12 @@ A Python library implementing a practical lifecycle portfolio choice framework i
 
 Most portfolio allocation "rules" are single-variable heuristics: 60/40, 100-minus-age, target-date funds. They ignore the biggest asset most people own, their future earning power. A 30-year-old software engineer with $100k in savings and 35 years of income ahead is in a fundamentally different position than a 30-year-old retiree with the same $100k.
 
-This library takes a **balance-sheet** view of your finances. Your investable portfolio is only part of your total wealth. Future earnings (human capital) act like a bond-like asset, and accounting for them changes how much stock risk you should take. The result is a theoretically grounded, personalized allocation that evolves naturally over your lifecycle, no arbitrary rules required.
+This library takes a **balance-sheet** view of your finances. Your investable portfolio is only part of your total wealth. Future earnings (human capital) act like a bond-like asset for many workers, and accounting for them changes how much stock risk you should take. However, for tech workers with RSUs, startup founders, and commission-based roles, human capital is partly equity-like; the library's [human capital beta](papers/risky_human_capital.pdf) parameter captures this distinction. The result is a theoretically grounded, personalized allocation that evolves naturally over your lifecycle, no arbitrary rules required.
 
 ## Features
 
 - **Core allocation engine**: Merton-style optimal risky share adjusted for human capital
+- **Human capital beta**: risk-adjust human capital for equity-like jobs (tech RSUs, startups, commission sales)
 - **4 income models**: flat, constant-growth, age-profile, and CSV-based
 - **Strategy comparison**: benchmark against 60/40, 100-minus-age, and target-date funds
 - **Visualization suite**: balance sheet waterfall, glide paths, sensitivity tornado, heatmaps
@@ -87,7 +88,7 @@ This produces `allocation.json`, `summary.md`, and charts in `output/charts/`.
 
 1. Compute a **baseline risky share** (Merton-style): `alpha* = (mu - r) / (gamma * sigma^2)`
 2. Estimate **human capital** H as the present value of future earnings + retirement benefits, discounted by survival probability and a term structure
-3. Adjust: `alpha = alpha* x (1 + H/W)`, clamped to [0, 1] (or [0, L_max] with leverage)
+3. Adjust: `alpha = alpha* x (1 + (1 - beta_H) x H/W)`, clamped to [0, 1] (or [0, L_max] with leverage). Here `beta_H` is the human capital beta (0 = bond-like, 1 = equity-like; default 0)
 
 Young workers with high H/W ratios get higher equity allocations. As you age and accumulate financial wealth, H shrinks relative to W and the allocation naturally declines, producing a lifecycle glide path from first principles rather than arbitrary rules.
 
@@ -98,14 +99,19 @@ Young workers with high H/W ratios get higher equity allocations. As you age and
 | Young saver | 25 | $70k | $25k | ~115x | 100% |
 | Mid-career | 45 | $120k | $500k | ~4x | ~96% |
 | Near-retirement | 60 | $150k | $1M | ~0.8x | ~24% |
+| Tech worker (beta=0.6) | 30 | $120k | $150k | ~27x | ~100% (vs ~100% standard) |
 
-*Values computed from the example YAML profiles with default market assumptions (mu=5%, r=2%, sigma=18%). Results vary with risk tolerance and assumptions.*
+*Values computed from the example YAML profiles with default market assumptions (mu=5%, r=2%, sigma=18%). The tech worker row shows the impact of beta=0.6 on allocation. Results vary with risk tolerance and assumptions.*
 
 ## Tutorial
 
 Explore the interactive tutorial notebook for a guided walkthrough:
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/engineerinvestor/lifecycle-allocation/blob/main/examples/notebooks/tutorial.ipynb)
+
+Explore the risky human capital tutorial for industry-specific beta adjustments:
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/engineerinvestor/lifecycle-allocation/blob/main/examples/notebooks/risky_human_capital.ipynb)
 
 Or run locally:
 
@@ -117,11 +123,21 @@ jupyter notebook examples/notebooks/tutorial.ipynb
 
 Full documentation is available at [engineerinvestor.github.io/lifecycle-allocation](https://engineerinvestor.github.io/lifecycle-allocation).
 
+## Research
+
+The human capital beta framework is described in an academic paper:
+
+- **[Beyond Bond-Like Human Capital: A Beta-Adjusted Framework for Lifecycle Portfolio Choice](papers/risky_human_capital.pdf)** (full paper)
+- **[Why Your Job Affects How You Should Invest](papers/risky_human_capital_explainer.pdf)** (one-page plain-English explainer)
+
+If you use the human capital beta methodology, please cite the paper (see Citation section below).
+
 ## Roadmap
 
 | Version | Milestone |
 |---|---|
 | **v0.1** | Core allocation engine, CLI, YAML profiles, strategy comparison, charts |
+| **v0.2** | Human capital beta, industry calibration, risky HC paper and notebook |
 | **v0.5** | Monte Carlo simulation, CRRA utility evaluation, Social Security modeling |
 | **v1.0** | Full documentation, tax-aware optimization, couples modeling |
 
@@ -150,8 +166,16 @@ If you use this library in academic work, please cite both the underlying resear
   author={{Engineer Investor}},
   year={2025},
   url={https://github.com/engineerinvestor/lifecycle-allocation},
-  version={0.1.0},
+  version={0.2.0},
   license={MIT}
+}
+
+@techreport{engineerinvestor2025risky,
+  title={Beyond Bond-Like Human Capital: A Beta-Adjusted Framework for Lifecycle Portfolio Choice},
+  author={{Engineer Investor}},
+  year={2025},
+  type={Working Paper},
+  url={https://github.com/engineerinvestor/lifecycle-allocation/blob/main/papers/risky_human_capital.pdf}
 }
 ```
 

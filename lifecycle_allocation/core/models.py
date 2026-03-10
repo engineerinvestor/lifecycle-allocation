@@ -127,6 +127,34 @@ class MortalitySpec:
 
 
 @dataclass
+class HumanCapitalSpec:
+    """Specification for human capital risk characteristics.
+
+    Controls how much of human capital is treated as equity-like vs.
+    bond-like. A beta of 0 (default) recovers the standard model where
+    all human capital is bond-like. A beta of 1 means human capital is
+    fully equity-like and provides no portfolio diversification benefit.
+
+    Attributes
+    ----------
+    beta : float
+        Fraction of human capital that is equity-like. Must be in [0, 1].
+        0 = fully bond-like (government worker), 1 = fully equity-like
+        (startup founder with equity-heavy compensation).
+    industry : str or None
+        Optional industry identifier. When provided without ``beta``,
+        the loader can resolve beta via ``suggested_beta()``.
+    """
+
+    beta: float = 0.0
+    industry: str | None = None
+
+    def __post_init__(self) -> None:
+        if not (0.0 <= self.beta <= 1.0):
+            raise ValueError(f"human_capital beta must be in [0, 1], got {self.beta}")
+
+
+@dataclass
 class DiscountCurveSpec:
     """Specification for discount curve used to discount future cash flows.
 
@@ -241,6 +269,9 @@ class InvestorProfile:
         Specification for retirement benefits (e.g., Social Security proxy).
     mortality_model : MortalitySpec
         Specification for survival probability modeling.
+    human_capital_model : HumanCapitalSpec
+        Specification for human capital risk characteristics (beta).
+        Controls the equity-like vs. bond-like decomposition of H.
     """
 
     age: int
@@ -252,6 +283,7 @@ class InvestorProfile:
     income_model: IncomeModelSpec = field(default_factory=IncomeModelSpec)
     benefit_model: BenefitModelSpec = field(default_factory=BenefitModelSpec)
     mortality_model: MortalitySpec = field(default_factory=MortalitySpec)
+    human_capital_model: HumanCapitalSpec = field(default_factory=HumanCapitalSpec)
 
     def __post_init__(self) -> None:
         if self.risk_tolerance is None and self.risk_aversion is None:
@@ -300,7 +332,8 @@ class AllocationResult:
         Human-readable explanation of the allocation result.
     components : dict
         Intermediate values for debugging and education (H, W, H/W, gamma,
-        market assumptions, etc.).
+        market assumptions, ``human_capital_beta``, ``human_capital_bond_like``,
+        ``human_capital_equity_like``, etc.).
     """
 
     alpha_star: float

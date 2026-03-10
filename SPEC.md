@@ -155,6 +155,25 @@ Mortality models:
 - **Simple survival curve** (parametric)
 - **User-supplied survival probabilities** by age
 
+### 4.3.1 Risk-Adjusted Human Capital (Beta Extension)
+
+The standard model treats all human capital as bond-like, which fails for workers whose income is significantly correlated with equity markets (e.g., tech workers with RSU-heavy compensation, startup founders, commission-based sales).
+
+**Human capital beta** `beta_H` in [0, 1] captures the fraction of human capital that behaves like equity:
+
+- `H_bond = (1 - beta_H) * H` (bond-like portion, provides diversification)
+- `H_equity = beta_H * H` (equity-like portion, does not diversify)
+
+The modified allocation formula:
+
+- `alpha_t = clamp(alpha_star * (1 + (1 - beta_H) * H_t / W_t), 0, upper)`
+
+When `beta_H = 0` (default), this recovers the standard model. When `beta_H = 1`, the allocation reduces to `alpha_star` because human capital provides no diversification benefit.
+
+Industry-specific betas are calibrated from Davis & Willen (2000) and Benzoni et al. (2007), ranging from 0.00 (government, tenured education) to 0.85 (startup equity-heavy). The `HumanCapitalSpec` dataclass stores beta and optional industry; the `suggested_beta()` function resolves industry names to calibrated values.
+
+See the companion paper "Beyond Bond-Like Human Capital" for the full derivation and calibration methodology.
+
 ### 4.4 Recommended investable stock share `alpha_t`
 Core practical rule, incorporating the two-tier risky share from §4.2:
 

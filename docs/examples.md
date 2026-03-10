@@ -104,11 +104,47 @@ income_model:
 
 ---
 
+## Tech Worker with RSUs (Age 30)
+
+**Persona:** A software engineer at a large tech company with RSU-heavy compensation. Over half of their total compensation is in restricted stock units, making their human capital significantly equity-like (beta=0.60).
+
+**Profile:** `examples/profiles/tech_worker.yaml`
+
+```yaml
+age: 30
+retirement_age: 67
+investable_wealth: 150000
+after_tax_income: 120000
+risk_tolerance: 6
+
+income_model:
+  type: growth
+  g: 0.03
+
+human_capital_model:
+  industry: tech_with_rsus
+```
+
+**Results (beta=0.6 vs standard beta=0):**
+
+| Metric | Beta=0 (Standard) | Beta=0.6 (Tech) |
+|---|---|---|
+| Human capital (H) | ~$4,900,000 | ~$4,900,000 |
+| H_bond (diversifying) | ~$4,900,000 | ~$1,960,000 |
+| H_equity (non-diversifying) | $0 | ~$2,940,000 |
+| alpha* (baseline) | 55.8% | 55.8% |
+| Recommended allocation | **100%** (capped) | **100%** (capped) |
+
+**Interpretation:** For this young worker with very high H/W, both models recommend 100% equity because even the reduced bond-like H is still enormous relative to W. The difference becomes material for mid-career workers with lower H/W ratios.
+
+---
+
 ## Comparison
 
 | Archetype | Age | H/W | alpha* | Recommended | 60/40 | 100-age |
 |---|---|---|---|---|---|---|
 | Young saver | 25 | ~115x | 70.0% | 100% | 60% | 75% |
+| Tech worker (beta=0.6) | 30 | ~33x | 55.8% | 100% | 60% | 70% |
 | Mid-career | 45 | ~4.1x | 46.3% | ~96% | 60% | 55% |
 | Near-retirement | 60 | ~0.8x | 14.4% | ~24% | 60% | 40% |
 

@@ -24,7 +24,13 @@ import pandas as pd  # noqa: E402
 from matplotlib.axes import Axes  # noqa: E402
 from matplotlib.figure import Figure  # noqa: E402
 
-from lifecycle_allocation.core.models import AllocationResult, InvestorProfile  # noqa: E402
+from lifecycle_allocation.core.allocation import recommended_stock_share  # noqa: E402
+from lifecycle_allocation.core.models import (  # noqa: E402
+    AllocationResult,
+    HumanCapitalSpec,
+    InvestorProfile,
+    MarketAssumptions,
+)
 from lifecycle_allocation.viz.themes import THEME, apply_theme  # noqa: E402
 
 
@@ -61,6 +67,7 @@ def plot_balance_sheet(
     h = result.human_capital
     total = w + h
     hw_ratio = h / w if w > 0 else 0.0
+    beta_h = result.components.get("human_capital_beta", 0.0)
 
     if ax is None:
         fig, ax = plt.subplots(figsize=THEME["figsize"])
@@ -68,15 +75,23 @@ def plot_balance_sheet(
         fig = ax.get_figure()  # type: ignore[assignment]
     assert ax is not None and fig is not None
 
-    bars = ax.bar(
-        ["Financial\nWealth (W)", "Human\nCapital (H)", "Total\n(W + H)"],
-        [w, h, total],
-        color=[colors["wealth"], colors["human_capital"], colors["total"]],
-        width=THEME["bar_width"],
-    )
+    if beta_h > 0:
+        # Show H decomposed into bond-like and equity-like portions
+        h_bond = result.components.get("human_capital_bond_like", h)
+        h_equity = result.components.get("human_capital_equity_like", 0.0)
+
+        labels = ["Financial\nWealth (W)", "H (Bond-like)", "H (Equity-like)", "Total\n(W + H)"]
+        values = [w, h_bond, h_equity, total]
+        bar_colors = [colors["wealth"], colors["human_capital"], "#FF9800", colors["total"]]
+    else:
+        labels = ["Financial\nWealth (W)", "Human\nCapital (H)", "Total\n(W + H)"]
+        values = [w, h, total]
+        bar_colors = [colors["wealth"], colors["human_capital"], colors["total"]]
+
+    bars = ax.bar(labels, values, color=bar_colors, width=THEME["bar_width"])
 
     # Annotate values
-    for bar, val in zip(bars, [w, h, total]):
+    for bar, val in zip(bars, values):
         ax.text(
             bar.get_x() + bar.get_width() / 2,
             bar.get_height(),
@@ -87,11 +102,10 @@ def plot_balance_sheet(
             fontweight="bold",
         )
 
-    ax.set_title(
-        f"Personal Balance Sheet (H/W = {hw_ratio:.1f}x)",
-        fontsize=THEME["font_size"]["title"],
-        fontweight="bold",
-    )
+    title = f"Personal Balance Sheet (H/W = {hw_ratio:.1f}x)"
+    if beta_h > 0:
+        title += f", beta={beta_h:.2f}"
+    ax.set_title(title, fontsize=THEME["font_size"]["title"], fontweight="bold")
     ax.set_ylabel("Value ($)", fontsize=THEME["font_size"]["label"])
     apply_theme(ax)
 
@@ -170,6 +184,75 @@ def plot_strategy_bars(
     ax.set_xlim(0, max(allocations) * 1.2 + 0.05)
     ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f"{x:.0%}"))
 
+    apply_theme(ax)
+    fig.tight_layout()
+
+    if save_path:
+        fig.savefig(str(save_path), dpi=150, bbox_inches="tight")
+
+    return fig
+
+
+def plot_beta_sensitivity(
+    profile: InvestorProfile,
+    market: MarketAssumptions,
+    *,
+    betas: list[float] | None = None,
+    ax: Axes | None = None,
+    save_path: str | Path | None = None,
+) -> Figure:
+    """Plot recommended allocation vs. human capital beta.
+
+    Shows how the equity allocation decreases as human capital becomes
+    more equity-like (higher beta).
+
+    Parameters
+    ----------
+    profile : InvestorProfile
+        Base investor profile. The human_capital_model.beta will be
+        varied across the specified range.
+    market : MarketAssumptions
+        Capital market assumptions.
+    betas : list of float or None
+        Beta values to evaluate. Defaults to 0.0, 0.1, ..., 1.0.
+    ax : Axes or None
+        Matplotlib axes to draw on. If None, a new figure is created.
+    save_path : str, Path, or None
+        If provided, saves the figure to this path at 150 DPI.
+
+    Returns
+    -------
+    Figure
+        The matplotlib Figure containing the chart.
+    """
+    import copy
+
+    if betas is None:
+        betas = [i / 10.0 for i in range(11)]
+
+    allocations = []
+    for b in betas:
+        p = copy.copy(profile)
+        p.human_capital_model = HumanCapitalSpec(beta=b)
+        r = recommended_stock_share(p, market)
+        allocations.append(r.alpha_recommended)
+
+    if ax is None:
+        fig, ax = plt.subplots(figsize=THEME["figsize"])
+    else:
+        fig = ax.get_figure()  # type: ignore[assignment]
+    assert ax is not None and fig is not None
+
+    ax.plot(betas, allocations, linewidth=2.5, color=THEME["colors"]["choi"], marker="o")
+    ax.set_xlabel("Human Capital Beta", fontsize=THEME["font_size"]["label"])
+    ax.set_ylabel("Recommended Stock Allocation", fontsize=THEME["font_size"]["label"])
+    ax.set_title(
+        "Allocation Sensitivity to Human Capital Beta",
+        fontsize=THEME["font_size"]["title"],
+        fontweight="bold",
+    )
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f"{x:.0%}"))
+    ax.set_xlim(0, 1)
     apply_theme(ax)
     fig.tight_layout()
 

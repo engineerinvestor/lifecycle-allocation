@@ -5,6 +5,7 @@ import pytest
 from lifecycle_allocation.core.allocation import alpha_star, recommended_stock_share
 from lifecycle_allocation.core.models import (
     ConstraintsSpec,
+    HumanCapitalSpec,
     InvestorProfile,
     MarketAssumptions,
 )
@@ -171,3 +172,86 @@ class TestRecommendedStockShare:
         assert "human_capital" in result.components
         assert "gamma" in result.components
         assert "hw_ratio" in result.components
+
+
+class TestBetaAdjustedAllocation:
+    def _simple_profile(self, beta: float = 0.0, **kwargs: object) -> InvestorProfile:
+        defaults = dict(
+            age=30,
+            retirement_age=67,
+            investable_wealth=100_000.0,
+            after_tax_income=70_000.0,
+            risk_tolerance=5,
+            human_capital_model=HumanCapitalSpec(beta=beta),
+        )
+        defaults.update(kwargs)
+        return InvestorProfile(**defaults)  # type: ignore[arg-type]
+
+    def test_beta_zero_matches_original(self) -> None:
+        """beta=0 should produce the same result as the standard model."""
+        profile_std = InvestorProfile(
+            age=30,
+            retirement_age=67,
+            investable_wealth=100_000.0,
+            after_tax_income=70_000.0,
+            risk_tolerance=5,
+        )
+        profile_beta0 = self._simple_profile(beta=0.0)
+        market = MarketAssumptions(mu=0.05, r=0.02, sigma=0.18)
+        r_std = recommended_stock_share(profile_std, market)
+        r_beta0 = recommended_stock_share(profile_beta0, market)
+        assert r_std.alpha_unconstrained == pytest.approx(r_beta0.alpha_unconstrained, rel=1e-9)
+        assert r_std.alpha_recommended == pytest.approx(r_beta0.alpha_recommended, rel=1e-9)
+
+    def test_beta_one_eliminates_hc_adjustment(self) -> None:
+        """beta=1 means all HC is equity-like, so alpha = alpha_star."""
+        profile = self._simple_profile(beta=1.0)
+        market = MarketAssumptions(mu=0.05, r=0.02, sigma=0.18)
+        result = recommended_stock_share(profile, market)
+        a_star_val, _, _ = alpha_star(market, profile.gamma)
+        # With beta=1, h_bond=0, so alpha_unconstrained = a_star * (1 + 0/W) = a_star
+        assert result.alpha_unconstrained == pytest.approx(a_star_val, rel=1e-9)
+
+    def test_higher_beta_lower_allocation(self) -> None:
+        """Higher beta should produce lower or equal equity allocation."""
+        market = MarketAssumptions(mu=0.05, r=0.02, sigma=0.18)
+        betas = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+        allocs = []
+        for b in betas:
+            profile = self._simple_profile(beta=b)
+            r = recommended_stock_share(profile, market)
+            allocs.append(r.alpha_unconstrained)
+        for i in range(len(allocs) - 1):
+            assert allocs[i] >= allocs[i + 1]
+
+    def test_monotonicity_in_beta(self) -> None:
+        """Unconstrained allocation is monotonically non-increasing in beta."""
+        market = MarketAssumptions(mu=0.05, r=0.02, sigma=0.18)
+        prev = float("inf")
+        for b_int in range(21):
+            b = b_int / 20.0
+            profile = self._simple_profile(beta=b)
+            r = recommended_stock_share(profile, market)
+            assert r.alpha_unconstrained <= prev + 1e-12
+            prev = r.alpha_unconstrained
+
+    def test_components_contain_beta_keys(self) -> None:
+        """Components dict should contain human capital beta decomposition."""
+        profile = self._simple_profile(beta=0.5)
+        market = MarketAssumptions()
+        result = recommended_stock_share(profile, market)
+        assert "human_capital_beta" in result.components
+        assert "human_capital_bond_like" in result.components
+        assert "human_capital_equity_like" in result.components
+        assert result.components["human_capital_beta"] == pytest.approx(0.5)
+        h = result.human_capital
+        assert result.components["human_capital_bond_like"] == pytest.approx(0.5 * h)
+        assert result.components["human_capital_equity_like"] == pytest.approx(0.5 * h)
+
+    def test_validation_rejects_negative_beta(self) -> None:
+        with pytest.raises(ValueError, match="human_capital beta must be in"):
+            HumanCapitalSpec(beta=-0.1)
+
+    def test_validation_rejects_beta_above_one(self) -> None:
+        with pytest.raises(ValueError, match="human_capital beta must be in"):
+            HumanCapitalSpec(beta=1.1)
