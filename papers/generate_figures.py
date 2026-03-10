@@ -173,7 +173,7 @@ def figure_balance_sheet() -> None:
         ax.set_xticks([0, 1])
         ax.set_xticklabels(["Financial\nWealth", "Human\nCapital"])
         ax.set_ylim(0, 650_000)
-        ax.yaxis.set_major_formatter(mpl.ticker.FuncFormatter(lambda x, _: f"${x/1000:.0f}k"))
+        ax.yaxis.set_major_formatter(mpl.ticker.FuncFormatter(lambda x, _: f"${x / 1000:.0f}k"))
 
         # Annotation box
         ax.annotate(
