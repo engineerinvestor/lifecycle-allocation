@@ -175,7 +175,7 @@ with st.sidebar:
     )
     retirement_age = st.slider(
         "Retirement age",
-        min_value=55,
+        min_value=30,
         max_value=75,
         value=preset["retirement_age"] if preset else 67,
     )
@@ -605,7 +605,7 @@ with tab3:
     for b in betas_to_plot:
         allocs = []
         for a in ages:
-            ra = min(retirement_age, 75)
+            ra = retirement_age
             r_a = _compute_allocation(
                 a,
                 ra,
